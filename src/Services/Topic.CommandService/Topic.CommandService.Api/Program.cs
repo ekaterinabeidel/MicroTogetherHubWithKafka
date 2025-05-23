@@ -1,6 +1,11 @@
+using Topic.CommandService.Api;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCommandServices(builder.Configuration); // ❗️
+
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/", () => "Hello Topic.CommandService");
 
 app.Run();
