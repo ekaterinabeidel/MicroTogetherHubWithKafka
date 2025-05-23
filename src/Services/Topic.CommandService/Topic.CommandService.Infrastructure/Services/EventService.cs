@@ -1,11 +1,17 @@
 using Core.Events;
 using Core.Events.Dao;
 using Core.Exceptions;
+using Core.KafkaProducer;
 using Core.Services;
+using Microsoft.Extensions.Configuration;
 using Topic.CommandService.Domain.Aggregates;
 
+namespace Topic.CommandService.Infrastructure.Services;
+
 public class EventService(
-    IEventStorage eventStorage)
+    IEventStorage eventStorage,
+    IEventKafkaProducer eventProducer,
+    IConfiguration configuration)
     : IEventService
 {
     public async Task<IEnumerable<BaseEvent>> GetEventsAsync(
@@ -63,6 +69,8 @@ public class EventService(
             );
 
             await eventStorage.SaveAsync(eventModel, ct);
+            var topic = configuration.GetValue<string>("Kafka:Topic")!;
+            await eventProducer.PublishEventAsync(topic, item);
         }
     }
 }

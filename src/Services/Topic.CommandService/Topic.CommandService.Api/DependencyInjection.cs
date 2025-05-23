@@ -1,5 +1,10 @@
 
 
+using Confluent.Kafka;
+using Core.KafkaProducer;
+using Topic.CommandService.Infrastructure.KafkaProducer;
+using Topic.CommandService.Infrastructure.Services;
+
 namespace Topic.CommandService.Api;
 
 public static class DependencyInjection
@@ -19,6 +24,8 @@ public static class DependencyInjection
         services.AddScoped<ICommentCommandHandler, CommentCommandHandler>();
         services.AddScoped<ITopicCommandHandler, TopicCommandHandler>();
         services.RegisterCommandHandler(); 
+        services.Configure<ProducerConfig>(configuration.GetSection("KafkaConfig"));
+        services.AddScoped<IEventKafkaProducer, EventKafkaProducer>();
         
         return services;
     }

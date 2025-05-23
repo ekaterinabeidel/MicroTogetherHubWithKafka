@@ -12,4 +12,9 @@
     <ProjectReference Include="..\Topic.CommandService.Domain\Topic.CommandService.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Confluent.Kafka" Version="2.8.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.5" />
+  </ItemGroup>
+
 </Project>
