@@ -1,6 +1,3 @@
-using Core.Commands;
-using Core.MediatR;
-
 namespace Topic.CommandService.Infrastructure.MediatR;
 
 public class CommandDispatcher : ICommandDispatcher
