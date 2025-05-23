@@ -1,9 +1,4 @@
-using Core.Events.Dao;
-using Core.Handlers;
-using Core.Services;
-using Marten;
-using Topic.CommandService.Domain.Aggregates;
-using Topic.CommandService.Infrastructure.Handlers;
+
 
 namespace Topic.CommandService.Api;
 
@@ -21,7 +16,56 @@ public static class DependencyInjection
         services.AddScoped<IEventStorage, EventStorage>();
         services.AddScoped<IEventService, EventService>();
         services.AddScoped<IEventHandler<ContentAggregate>, EventHandlerImpl>();
+        services.AddScoped<ICommentCommandHandler, CommentCommandHandler>();
+        services.AddScoped<ITopicCommandHandler, TopicCommandHandler>();
+        services.RegisterCommandHandler(); 
+        
+        return services;
+    }
+    
+    private static IServiceCollection RegisterCommandHandler(
+        this IServiceCollection services)
+    {
+        services.AddScoped<ICommandDispatcher>(provider =>
+        {
+            var dispatcher = new CommandDispatcher();
+
+            var commandCommentHandler = provider.GetRequiredService<ICommentCommandHandler>();
+            dispatcher.RegisterHandler<CreateCommentCommand>(command =>
+            {
+                return commandCommentHandler.HandleAsync(command, CancellationToken.None);
+            });
+            dispatcher.RegisterHandler<UpdateCommentCommand>(command =>
+            {
+                return commandCommentHandler.HandleAsync(command, CancellationToken.None);
+            });
+            dispatcher.RegisterHandler<RemoveCommentCommand>(command =>
+            {
+                return commandCommentHandler.HandleAsync(command, CancellationToken.None);
+            });
+
+            var commandTopicHandler = provider.GetRequiredService<ITopicCommandHandler>();
+            dispatcher.RegisterHandler<CreateTopicCommand>(command =>
+            {
+                return commandTopicHandler.HandleAsync(command, CancellationToken.None);
+            });
+            dispatcher.RegisterHandler<RemoveTopicCommand>(command =>
+            {
+                return commandTopicHandler.HandleAsync(command, CancellationToken.None);
+            });
+            dispatcher.RegisterHandler<UpdateTopicCommand>(command =>
+            {
+                return commandTopicHandler.HandleAsync(command, CancellationToken.None);
+            });
+            dispatcher.RegisterHandler<LikeTopicCommand>(command =>
+            {
+                return commandTopicHandler.HandleAsync(command, CancellationToken.None);
+            });
+
+            return dispatcher;
+        });
 
         return services;
     }
 }
+
