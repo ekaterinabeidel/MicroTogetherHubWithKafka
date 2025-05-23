@@ -1,5 +1,3 @@
-using Core.Commands;
-
 namespace Topic.CommandService.Api.Comments.Commands.CreateComment;
 
 public class CreateCommentCommand : BaseCommand

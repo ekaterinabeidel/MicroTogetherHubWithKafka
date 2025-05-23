@@ -1,5 +1,3 @@
-using Core.Commands;
-
 namespace Topic.CommandService.Api.Comments.Commands.RemoveComment;
 
 public class RemoveCommentCommand : BaseCommand

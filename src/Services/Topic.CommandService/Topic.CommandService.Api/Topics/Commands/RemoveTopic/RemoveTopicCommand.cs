@@ -1,5 +1,3 @@
-using Core.Commands;
-
 namespace Topic.CommandService.Api.Topics.Commands.RemoveTopic;
 
 public class RemoveTopicCommand : BaseCommand

@@ -1,5 +1,3 @@
-using Core.Commands;
-
 namespace Topic.CommandService.Api.Comments.Commands.UpdateComment;
 
 public class UpdateCommentCommand : BaseCommand
