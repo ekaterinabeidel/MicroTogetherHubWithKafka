@@ -1,4 +1,5 @@
 using Core.Events.Dao;
+using Core.Services;
 using Marten;
 
 namespace Topic.CommandService.Api;
@@ -15,6 +16,7 @@ public static class DependencyInjection
             .UseLightweightSessions();
 
         services.AddScoped<IEventStorage, EventStorage>();
+        services.AddScoped<IEventService, EventService>(); // ❗️
 
         return services;
     }

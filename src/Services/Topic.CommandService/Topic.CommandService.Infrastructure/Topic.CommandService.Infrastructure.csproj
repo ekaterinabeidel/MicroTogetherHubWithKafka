@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Shared\BuildingBlocks\Core\Core.csproj" />
+    <ProjectReference Include="..\Topic.CommandService.Domain\Topic.CommandService.Domain.csproj" />
   </ItemGroup>
 
 </Project>
