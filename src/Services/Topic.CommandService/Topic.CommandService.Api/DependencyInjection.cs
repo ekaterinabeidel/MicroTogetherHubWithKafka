@@ -1,6 +1,9 @@
 using Core.Events.Dao;
+using Core.Handlers;
 using Core.Services;
 using Marten;
+using Topic.CommandService.Domain.Aggregates;
+using Topic.CommandService.Infrastructure.Handlers;
 
 namespace Topic.CommandService.Api;
 
@@ -16,7 +19,8 @@ public static class DependencyInjection
             .UseLightweightSessions();
 
         services.AddScoped<IEventStorage, EventStorage>();
-        services.AddScoped<IEventService, EventService>(); // ❗️
+        services.AddScoped<IEventService, EventService>();
+        services.AddScoped<IEventHandler<ContentAggregate>, EventHandlerImpl>();
 
         return services;
     }
