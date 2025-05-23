@@ -1,5 +1,6 @@
 
 
+using Carter;
 using Confluent.Kafka;
 using Core.KafkaProducer;
 using Topic.CommandService.Infrastructure.KafkaProducer;
@@ -26,7 +27,7 @@ public static class DependencyInjection
         services.RegisterCommandHandler(); 
         services.Configure<ProducerConfig>(configuration.GetSection("KafkaConfig"));
         services.AddScoped<IEventKafkaProducer, EventKafkaProducer>();
-        
+        services.AddCarter();
         return services;
     }
     
@@ -73,6 +74,12 @@ public static class DependencyInjection
         });
 
         return services;
+    }
+    
+    public static WebApplication UseApiServices(this WebApplication app)  // ❗️
+    {
+        app.MapCarter();
+        return app;
     }
 }
 
