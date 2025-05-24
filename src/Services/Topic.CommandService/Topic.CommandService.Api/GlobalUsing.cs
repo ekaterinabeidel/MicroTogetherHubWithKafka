@@ -16,3 +16,9 @@ global using Topic.CommandService.Api.Topics.Commands.UpdateTopic;
 global using Topic.CommandService.Domain.Aggregates;
 global using Topic.CommandService.Infrastructure.Handlers;
 global using Topic.CommandService.Infrastructure.MediatR;
+global using Core.ResponseDtos;
+global using Core.Exceptions;
+global using Topic.CommandService.Api.ResponseDtos;
+global using Microsoft.AspNetCore.Mvc;
+global using Topic.CommandService.Api.Endpoints;
+
