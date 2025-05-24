@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\BuildingBlocks\Core\Core.csproj" />
     <ProjectReference Include="..\Topic.QueryService.Domain\Topic.QueryService.Domain.csproj" />
   </ItemGroup>
 
