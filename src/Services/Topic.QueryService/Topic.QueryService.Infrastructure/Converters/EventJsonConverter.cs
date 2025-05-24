@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Core.Events;
 
 namespace Topic.QueryService.Infrastructure.Converters;
 

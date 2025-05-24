@@ -1,5 +1,7 @@
+using Confluent.Kafka;
 using Microsoft.EntityFrameworkCore;
 using Topic.QueryService.Domain.Dao;
+using Topic.QueryService.Infrastructure.Consumers;
 using Topic.QueryService.Infrastructure.Dao;
 using Topic.QueryService.Infrastructure.Data;
 using Topic.QueryService.Infrastructure.Handlers;
@@ -12,6 +14,13 @@ public static class DependencyInjection
         this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContextWithFactory(configuration);
+        
+        var consumerConfig = new ConsumerConfig();
+        configuration.GetSection(nameof(ConsumerConfig)).Bind(consumerConfig);
+        services.AddSingleton<ConsumerConfig>(consumerConfig);
+
+        services.AddScoped<IKafkaEventSubscriber, KafkaEventSubscriber>();
+        services.AddHostedService<KafkaEventConsumerBackgroundService>(); 
 
         return services;
     }
