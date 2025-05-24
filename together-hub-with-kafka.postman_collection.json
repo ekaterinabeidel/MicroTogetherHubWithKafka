@@ -1,0 +1,799 @@
+{
+	"info": {
+		"_postman_id": "645c7d7c-6e83-40b4-8937-45ef672641ae",
+		"name": "together-hub-with-kafka",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39603735"
+	},
+	"item": [
+		{
+			"name": "Topic.CommandService",
+			"item": [
+				{
+					"name": "healthcheck",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Массив с реалистичными именами авторов",
+									"const authorNames = [",
+									"    \"Анна Иванова\", \"Петр Сидоров\", \"Елена Смирнова\", \"Алексей Козлов\", \"Ольга Петрова\",",
+									"    \"Дмитрий Волков\", \"Мария Соколова\", \"Сергей Новиков\", \"Татьяна Морозова\", \"Игорь Кузнецов\"",
+									"];",
+									"",
+									"// Массив с осмысленными сообщениями",
+									"const messageTexts = [",
+									"    \"Привет всем! Как ваши дела?\",",
+									"    \"Кто-нибудь уже пробовал новое приложение?\",",
+									"    \"Сегодня прекрасная погода для прогулки!\",",
+									"    \"Поделитесь своими планами на выходные.\",",
+									"    \"Какую книгу вы сейчас читаете?\",",
+									"    \"Кто знает хороший рецепт домашнего пирога?\",",
+									"    \"Давайте обсудим последние новости технологий.\",",
+									"    \"Кто-нибудь занимается спортом? Поделитесь опытом!\",",
+									"    \"Какой фильм вы недавно посмотрели и рекомендуете?\",",
+									"    \"Есть идеи для следующей встречи нашего клуба?\"",
+									"];",
+									"",
+									"// Выбор случайного имени автора",
+									"const authorName = authorNames[Math.floor(Math.random() * authorNames.length)];",
+									"",
+									"// Выбор случайного текста сообщения",
+									"const messageText = messageTexts[Math.floor(Math.random() * messageTexts.length)];",
+									"",
+									"// Установка переменных для использования в теле запроса",
+									"pm.collectionVariables.set(\"authorName\", authorName);",
+									"pm.collectionVariables.set(\"messageText\", messageText);",
+									"",
+									"// Логирование значений для проверки",
+									"console.log(\"Выбранное имя автора:\", authorName);",
+									"console.log(\"Выбранный текст сообщения:\", messageText);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Проверяем, что ответ получен успешно",
+									"if (pm.response.code === 201) {",
+									"    // Парсим тело ответа как JSON",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    // Проверяем, что в ответе есть поле id",
+									"    if (jsonData && jsonData.id) {",
+									"        // Сохраняем id в переменную коллекции",
+									"        pm.collectionVariables.set(\"lastTopicId\", jsonData.id);",
+									"        console.log(\"ID сохранен в переменную коллекции: \" + jsonData.id);",
+									"    } else {",
+									"        console.log(\"ID не найден в ответе\");",
+									"    }",
+									"} else {",
+									"    console.log(\"Запрос не выполнен успешно. Код ответа: \" + pm.response.code);",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"authorName\": \"{{authorName}}\",\n  \"messageText\": \"{{messageText}}\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{topics-commands-url}}/",
+							"host": [
+								"{{topics-commands-url}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "topics",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Массив с реалистичными именами авторов",
+									"const authorNames = [",
+									"    \"Анна Иванова\", \"Петр Сидоров\", \"Елена Смирнова\", \"Алексей Козлов\", \"Ольга Петрова\",",
+									"    \"Дмитрий Волков\", \"Мария Соколова\", \"Сергей Новиков\", \"Татьяна Морозова\", \"Игорь Кузнецов\"",
+									"];",
+									"",
+									"// Массив с осмысленными сообщениями",
+									"const messageTexts = [",
+									"    \"Привет всем! Как ваши дела?\",",
+									"    \"Кто-нибудь уже пробовал новое приложение?\",",
+									"    \"Сегодня прекрасная погода для прогулки!\",",
+									"    \"Поделитесь своими планами на выходные.\",",
+									"    \"Какую книгу вы сейчас читаете?\",",
+									"    \"Кто знает хороший рецепт домашнего пирога?\",",
+									"    \"Давайте обсудим последние новости технологий.\",",
+									"    \"Кто-нибудь занимается спортом? Поделитесь опытом!\",",
+									"    \"Какой фильм вы недавно посмотрели и рекомендуете?\",",
+									"    \"Есть идеи для следующей встречи нашего клуба?\"",
+									"];",
+									"",
+									"// Выбор случайного имени автора",
+									"const authorName = authorNames[Math.floor(Math.random() * authorNames.length)];",
+									"",
+									"// Выбор случайного текста сообщения",
+									"const messageText = messageTexts[Math.floor(Math.random() * messageTexts.length)];",
+									"",
+									"// Установка переменных для использования в теле запроса",
+									"pm.collectionVariables.set(\"authorName\", authorName);",
+									"pm.collectionVariables.set(\"messageText\", messageText);",
+									"",
+									"// Логирование значений для проверки",
+									"console.log(\"Выбранное имя автора:\", authorName);",
+									"console.log(\"Выбранный текст сообщения:\", messageText);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData && jsonData.id) {",
+									"        pm.collectionVariables.set(\"lastTopicId\", jsonData.id);",
+									"        console.log(\"ID сохранен в переменную коллекции: \" + jsonData.id);",
+									"    } else {",
+									"        console.log(\"ID не найден в ответе\");",
+									"    }",
+									"} else {",
+									"    console.log(\"Запрос не выполнен успешно. Код ответа: \" + pm.response.code);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"authorName\": \"{{authorName}}\",\n  \"messageText\": \"{{messageText}}\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{topics-commands-url}}/api/topics",
+							"host": [
+								"{{topics-commands-url}}"
+							],
+							"path": [
+								"api",
+								"topics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "topics/{id}",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"messageText\": \"upd {{messageText}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{topics-commands-url}}/api/topics/{{lastTopicId}}",
+							"host": [
+								"{{topics-commands-url}}"
+							],
+							"path": [
+								"api",
+								"topics",
+								"{{lastTopicId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "topics/{id}/likes",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Генерация случайного имени автора",
+									"const authorName = `User_${Math.floor(Math.random() * 1000)}`;",
+									"",
+									"// Генерация случайного текста сообщения",
+									"const messageText = `Message_${Math.random().toString(36).substring(2, 15)}`;",
+									"",
+									"// Установка переменных для использования в теле запроса",
+									"pm.variables.set(\"authorName\", authorName);",
+									"pm.variables.set(\"messageText\", messageText);",
+									"",
+									"// Логирование значений для проверки",
+									"console.log(\"Generated authorName:\", authorName);",
+									"console.log(\"Generated messageText:\", messageText);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{topics-commands-url}}/api/topics/{{lastTopicId}}/likes",
+							"host": [
+								"{{topics-commands-url}}"
+							],
+							"path": [
+								"api",
+								"topics",
+								"{{lastTopicId}}",
+								"likes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "topics/{id}",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"authorName\": \"{{authorName}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{topics-commands-url}}/api/topics/{{lastTopicId}}",
+							"host": [
+								"{{topics-commands-url}}"
+							],
+							"path": [
+								"api",
+								"topics",
+								"{{lastTopicId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "topics/{id}/comment",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Массив с реалистичными именами авторов",
+									"const authorNames = [",
+									"    \"Анна Иванова\", \"Петр Сидоров\", \"Елена Смирнова\", \"Алексей Козлов\", \"Ольга Петрова\",",
+									"    \"Дмитрий Волков\", \"Мария Соколова\", \"Сергей Новиков\", \"Татьяна Морозова\", \"Игорь Кузнецов\"",
+									"];",
+									"",
+									"// Массив с осмысленными комментариями",
+									"const commentTexts = [",
+									"    \"Отличный пост! Спасибо за информацию.\",",
+									"    \"Интересная точка зрения. Есть над чем подумать.\",",
+									"    \"Я не совсем согласен с автором, но уважаю его мнение.\",",
+									"    \"Это действительно помогло мне разобраться в теме.\",",
+									"    \"Можете подробнее рассказать об этом аспекте?\",",
+									"    \"Я бы добавил еще пару пунктов к этому списку.\",",
+									"    \"Очень актуальная тема в наше время!\",",
+									"    \"Спасибо за подробное объяснение, все стало понятно.\",",
+									"    \"А есть ли статистика по этому вопросу?\",",
+									"    \"Хотелось бы увидеть больше примеров из практики.\"",
+									"];",
+									"",
+									"// Выбор случайного имени автора",
+									"const authorName = authorNames[Math.floor(Math.random() * authorNames.length)];",
+									"",
+									"// Выбор случайного текста комментария",
+									"const commentText = commentTexts[Math.floor(Math.random() * commentTexts.length)];",
+									"",
+									"// Установка переменных для использования в теле запроса",
+									"pm.collectionVariables.set(\"commentAuthorName\", authorName);",
+									"pm.collectionVariables.set(\"commentText\", commentText);",
+									"",
+									"// Логирование значений для проверки",
+									"console.log(\"Выбранное имя автора комментария:\", authorName);",
+									"console.log(\"Выбранный текст комментария:\", commentText);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"authorName\": \"{{commentAuthorName}}\",\n  \"text\": \"{{commentText}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{topics-commands-url}}/api/topics/{{lastTopicId}}/comments",
+							"host": [
+								"{{topics-commands-url}}"
+							],
+							"path": [
+								"api",
+								"topics",
+								"{{lastTopicId}}",
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "topics/comment/{id}",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"commentId\": \"432eab34-20b4-4eb0-be15-d2b0ee60fc53\",\n  \"authorName\": \"{{commentAuthorName}}\",\n  \"text\": \"upd {{commentText}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{topics-commands-url}}/api/topics/{{lastTopicId}}/comments/",
+							"host": [
+								"{{topics-commands-url}}"
+							],
+							"path": [
+								"api",
+								"topics",
+								"{{lastTopicId}}",
+								"comments",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "topics/comment/{id}",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"commentId\": \"678975a3-4319-4755-9516-f3ba1dcbc77a\",\n  \"authorName\": \"{{commentAuthorName}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{topics-commands-url}}/api/topics/{{lastTopicId}}/comments/",
+							"host": [
+								"{{topics-commands-url}}"
+							],
+							"path": [
+								"api",
+								"topics",
+								"{{lastTopicId}}",
+								"comments",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Topic.QueryService",
+			"item": [
+				{
+					"name": "healthcheck",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Проверяем, что ответ содержит данные",
+									"if (pm.response.code === 200) {",
+									"    try {",
+									"        // Парсим тело ответа как JSON",
+									"        const response = pm.response.json();",
+									"",
+									"        // Проверяем, что массив \"topics\" существует и содержит хотя бы один элемент",
+									"        if (response.topics && response.topics.length > 0) {",
+									"            // Извлекаем id первого топика",
+									"            const firstTopicId = response.topics[0].id;",
+									"",
+									"            // Сохраняем id в переменную коллекции",
+									"            pm.collectionVariables.set(\"firstTopicId\", firstTopicId);",
+									"",
+									"            // Логируем результат в консоль для проверки",
+									"            console.log(\"ID первого топика сохранён:\", firstTopicId);",
+									"        } else {",
+									"            console.warn(\"Массив 'topics' пуст или отсутствует.\");",
+									"        }",
+									"    } catch (error) {",
+									"        console.error(\"Ошибка при обработке ответа:\", error);",
+									"    }",
+									"} else {",
+									"    console.error(\"Ответ не успешен. Код состояния:\", pm.response.code);",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{topics-queries-url}}/",
+							"host": [
+								"{{topics-queries-url}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "topics",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    try {",
+									"        const response = pm.response.json();",
+									"        if (response.topics && response.topics.length > 0) {",
+									"            const firstTopicId = response.topics[0].id;",
+									"            pm.collectionVariables.set(\"firstTopicId\", firstTopicId);",
+									"            console.log(\"ID первого топика сохранён:\", firstTopicId);",
+									"        } else {",
+									"            console.warn(\"Массив 'topics' пуст или отсутствует.\");",
+									"        }",
+									"    } catch (error) {",
+									"        console.error(\"Ошибка при обработке ответа:\", error);",
+									"    }",
+									"} else {",
+									"    console.error(\"Ответ не успешен. Код состояния:\", pm.response.code);",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{topics-queries-url}}/api/topics",
+							"host": [
+								"{{topics-queries-url}}"
+							],
+							"path": [
+								"api",
+								"topics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "topics/{id}",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{topics-queries-url}}/api/topics/{{firstTopicId}}",
+							"host": [
+								"{{topics-queries-url}}"
+							],
+							"path": [
+								"api",
+								"topics",
+								"{{firstTopicId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "topics/author/{authorName}",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{topics-queries-url}}/api/topics/author/{{authorName}}",
+							"host": [
+								"{{topics-queries-url}}"
+							],
+							"path": [
+								"api",
+								"topics",
+								"author",
+								"{{authorName}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "topics/likes/{count}",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{topics-queries-url}}/api/topics/likes/1",
+							"host": [
+								"{{topics-queries-url}}"
+							],
+							"path": [
+								"api",
+								"topics",
+								"likes",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "topics/withComments",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{topics-queries-url}}/api/topics/withComments",
+							"host": [
+								"{{topics-queries-url}}"
+							],
+							"path": [
+								"api",
+								"topics",
+								"withComments"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "topics-commands-url",
+			"value": "http://localhost:6210",
+			"type": "string"
+		},
+		{
+			"key": "topics-queries-url",
+			"value": "http://localhost:6220",
+			"type": "string"
+		},
+		{
+			"key": "lastTopicId",
+			"value": ""
+		},
+		{
+			"key": "authorName",
+			"value": ""
+		},
+		{
+			"key": "messageText",
+			"value": ""
+		},
+		{
+			"key": "commentText",
+			"value": ""
+		},
+		{
+			"key": "commentAuthorName",
+			"value": ""
+		},
+		{
+			"key": "firstTopicId",
+			"value": ""
+		}
+	]
+}
