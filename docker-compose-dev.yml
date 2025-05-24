@@ -1,0 +1,81 @@
+# docker compose -f docker-compose-dev.yml -p topic-dev up -d
+# docker compose -f docker-compose-dev.yml -p topic-dev down -v
+
+services:
+
+  social_write_db:
+    container_name: social.write.db.dev
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345678
+      - POSTGRES_DB=social-write-db
+    restart: always
+    ports:
+      - "6001:5432"
+    volumes:
+      - postgres_write_db:/var/lib/postgresql/data/
+    networks:
+      - together-hub-network-dev
+
+  social_read_db:
+    container_name: social.read.db.dev
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345678
+      - POSTGRES_DB=social-read-db
+    restart: always
+    ports:
+      - "6002:5432"
+    volumes:
+      - postgres_read_db:/var/lib/postgresql/data/
+    networks:
+      - together-hub-network-dev
+
+  zookeeper:
+    container_name: zookeeper.dev
+    image: docker.io/bitnami/zookeeper:3.9.3
+    restart: always
+    ports:
+      - "2181:2181"
+    volumes:
+      - "zookeeper_data:/bitnami"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - together-hub-network-dev
+
+  kafka:
+    container_name: kafka.dev
+    image: docker.io/bitnami/kafka:3.9.0
+    ports:
+      - "9092:9092"
+    restart: always
+    volumes:
+      - "kafka_data:/bitnami"
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper.dev:2181
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://0.0.0.0:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+    depends_on:
+      - zookeeper
+    networks:
+      - together-hub-network-dev
+
+volumes:
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local
+  postgres_read_db:
+    driver: local    
+  postgres_write_db:
+    driver: local
+
+
+networks:
+  together-hub-network-dev:
+    driver: bridge
