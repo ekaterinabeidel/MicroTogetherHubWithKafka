@@ -1,13 +1,3 @@
-using Core.Events.Comments.CreateComment;
-using Core.Events.Comments.RemoveComment;
-using Core.Events.Comments.UpdateComment;
-using Core.Events.Topics.CreateTopic;
-using Core.Events.Topics.LikeTopic;
-using Core.Events.Topics.RemoveTopic;
-using Core.Events.Topics.UpdateTopic;
-using Topic.QueryService.Domain.Dao;
-using Topic.QueryService.Domain.Entities;
-
 namespace Topic.QueryService.Infrastructure.Handlers;
 
 public class QueryEventHandler(ITopicStorage topicStorage,

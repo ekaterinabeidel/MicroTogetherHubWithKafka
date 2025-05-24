@@ -1,6 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Topic.QueryService.Domain.Entities;
-
 namespace Topic.QueryService.Infrastructure.Data;
 
 public class ApplicationContext : DbContext

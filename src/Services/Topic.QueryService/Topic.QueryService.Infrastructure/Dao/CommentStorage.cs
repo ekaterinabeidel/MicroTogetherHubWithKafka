@@ -1,7 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Topic.QueryService.Domain.Dao;
-using Topic.QueryService.Domain.Entities;
-using Topic.QueryService.Infrastructure.Data;
 
 namespace Topic.QueryService.Infrastructure.Dao;
 

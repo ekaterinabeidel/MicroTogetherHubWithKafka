@@ -1,11 +1,3 @@
-using Core.Events.Comments.CreateComment;
-using Core.Events.Comments.RemoveComment;
-using Core.Events.Comments.UpdateComment;
-using Core.Events.Topics.CreateTopic;
-using Core.Events.Topics.LikeTopic;
-using Core.Events.Topics.RemoveTopic;
-using Core.Events.Topics.UpdateTopic;
-
 namespace Topic.QueryService.Infrastructure.Handlers;
 
 public interface IQueryEventHandler
