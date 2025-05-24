@@ -1,0 +1,29 @@
+# docker build --no-cache -t topic-command-service:latest -f dockerfile-topic-command-service .
+# docker run -d -p 6310:8080 --name topic-command-service topic-command-service:latest
+
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+WORKDIR /app
+EXPOSE 8080
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+COPY ["src/Services/Topic.CommandService/Topic.CommandService.Infrastructure/Topic.CommandService.Infrastructure.csproj", "src/Services/Topic.CommandService/Topic.CommandService.Infrastructure/"]
+COPY ["src/Services/Topic.CommandService/Topic.CommandService.Api/Topic.CommandService.Api.csproj", "src/Services/Topic.CommandService/Topic.CommandService.Api/"]
+COPY ["src/Services/Topic.CommandService/Topic.CommandService.Domain/Topic.CommandService.Domain.csproj", "src/Services/Topic.CommandService/Topic.CommandService.Domain/"]
+COPY ["src/Shared/BuildingBlocks/Core/Core.csproj", "src/Shared/BuildingBlocks/Core/"]
+
+# Восстанавливаем зависимости
+RUN dotnet restore "src/Services/Topic.CommandService/Topic.CommandService.Api/Topic.CommandService.Api.csproj"
+
+COPY . .
+
+RUN dotnet build "src/Services/Topic.CommandService/Topic.CommandService.Api/Topic.CommandService.Api.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "src/Services/Topic.CommandService/Topic.CommandService.Api/Topic.CommandService.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "Topic.CommandService.Api.dll"]

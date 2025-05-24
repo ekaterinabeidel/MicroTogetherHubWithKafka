@@ -1,0 +1,29 @@
+# docker build --no-cache -t topic-query-service:latest -f dockerfile-topic-query-service .
+# docker run -d -p 6320:8080 --name topic-query-service topic-query-service:latest
+
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+WORKDIR /app
+EXPOSE 8080
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+COPY ["src/Services/Topic.QueryService/Topic.QueryService.Infrastructure/Topic.QueryService.Infrastructure.csproj", "src/Services/Topic.QueryService/Topic.QueryService.Infrastructure/"]
+COPY ["src/Services/Topic.QueryService/Topic.QueryService.Api/Topic.QueryService.Api.csproj", "src/Services/Topic.QueryService/Topic.QueryService.Api/"]
+COPY ["src/Services/Topic.QueryService/Topic.QueryService.Domain/Topic.QueryService.Domain.csproj", "src/Services/Topic.QueryService/Topic.QueryService.Domain/"]
+COPY ["src/Shared/BuildingBlocks/Core/Core.csproj", "src/Shared/BuildingBlocks/Core/"]
+
+RUN dotnet restore "src/Services/Topic.QueryService/Topic.QueryService.Api/Topic.QueryService.Api.csproj"
+
+COPY . .
+
+RUN dotnet build "src/Services/Topic.QueryService/Topic.QueryService.Api/Topic.QueryService.Api.csproj" -c Release -o /app/build
+
+# Stage для публикации
+FROM build AS publish
+RUN dotnet publish "src/Services/Topic.QueryService/Topic.QueryService.Api/Topic.QueryService.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "Topic.QueryService.Api.dll"]

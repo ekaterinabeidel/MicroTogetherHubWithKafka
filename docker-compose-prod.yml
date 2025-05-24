@@ -1,0 +1,154 @@
+# Сборка и запуск сервисов
+# docker compose -f docker-compose-prod.yml -p topics-prod up -d --build
+
+# Для остановки контейнеров без их удаления:
+# docker compose -f docker-compose-prod.yml -p topics-prod stop
+
+# Для остановки и удаления контейнеров, а также связанных с ними сетей:
+# docker compose -f docker-compose-prod.yml -p topics-prod down
+
+# Если также удалить тома:
+# docker compose -f docker-compose-prod.yml -p topics-prod down -v
+
+services:
+  social_write_db:
+    container_name: social.write.db.prod
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345678
+      - POSTGRES_DB=social-write-db
+    restart: always
+    ports:
+      - "6201:5432"
+    volumes:
+      - postgres_write_db:/var/lib/postgresql/data/
+    networks:
+      - together-hub-network-prod
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 2s
+      retries: 5
+
+  social_read_db:
+    container_name: social.read.db.prod
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345678
+      - POSTGRES_DB=social-read-db
+    restart: always
+    ports:
+      - "6202:5432"
+    volumes:
+      - postgres_read_db:/var/lib/postgresql/data/
+    networks:
+      - together-hub-network-prod
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 2s
+      retries: 5
+      
+  zookeeper:
+    container_name: zookeeper.prod
+    image: docker.io/bitnami/zookeeper:3.9.3
+    restart: always
+    ports:
+      - "2181:2181"
+    volumes:
+      - "zookeeper_data:/bitnami"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - together-hub-network-prod
+
+  kafka:
+    container_name: kafka.prod
+    image: docker.io/bitnami/kafka:3.9.0
+    ports:
+      - "9092:9092"
+    restart: always
+    volumes:
+      - "kafka_data:/bitnami"
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper.prod:2181
+      - KAFKA_CFG_LISTENERS=INTERNAL://0.0.0.0:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=INTERNAL://kafka.prod:9092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=INTERNAL:PLAINTEXT
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=INTERNAL
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+    depends_on:
+      - zookeeper
+    networks:
+      - together-hub-network-prod
+
+  topic_command_service:
+    container_name: topic.command.service.prod
+    build:
+      context: .
+      dockerfile: ./dockerfile-topic-command-service
+      args:
+        - BUILDKIT_INLINE_CACHE=0
+    ports:
+      - "6210:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__PgConnection=Host=social.write.db.prod;Database=social-write-db;Username=postgres;Password=12345678
+      - ConsumerConfig__BootstrapServers=kafka.prod:9092
+    depends_on:
+      social_write_db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - together-hub-network-prod
+
+  topic_query_service:
+    container_name: topic.query.service.prod
+    build:
+      context: .
+      dockerfile: ./dockerfile-topic-query-service
+      args:
+        - BUILDKIT_INLINE_CACHE=0
+    ports:
+      - "6220:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__PgConnection=Host=social.read.db.prod;Database=social-read-db;Username=postgres;Password=12345678
+      - ConsumerConfig__BootstrapServers=kafka.prod:9092 # Обращение к Kafka по имени контейнера
+    depends_on:
+      social_read_db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - together-hub-network-prod
+    
+  topic_yarp_gateways:
+    container_name: topic.yarp.gateways.prod
+    build:
+      context: .
+      dockerfile: ./dockerfile-topic-yarp-api
+      args:
+        - BUILDKIT_INLINE_CACHE=0
+    ports:
+      - "6230:8080"
+    restart: unless-stopped
+    networks:
+      - together-hub-network-prod    
+
+volumes:
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local
+  postgres_read_db:
+    driver: local    
+  postgres_write_db:
+    driver: local
+
+
+networks:
+  together-hub-network-prod:
+    driver: bridge

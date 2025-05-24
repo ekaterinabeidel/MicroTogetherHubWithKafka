@@ -37,4 +37,4 @@ app.MapReverseProxy().RequireRateLimiting("fixed");
 // app.MapReverseProxy().RequireRateLimiting("fixed");
 app.MapReverseProxy().RequireRateLimiting("PerClientPolicy");
 
-app.Run("http://0.0.0.0:6030");
+app.Run();
