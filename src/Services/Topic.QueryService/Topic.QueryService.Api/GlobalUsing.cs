@@ -1,0 +1,15 @@
+global using Core.MediatR;
+global using Core.Queries;
+global using Topic.QueryService.Api.Topics.Queries.GetTopicById;
+global using Topic.QueryService.Api.Topics.Queries.GetTopics;
+global using Topic.QueryService.Api.Topics.Queries.GetTopicsByAuthorName;
+global using Topic.QueryService.Api.Topics.Queries.GetTopicsWithComments;
+global using Topic.QueryService.Api.Topics.Queries.GetTopicsWithLikes;
+global using Topic.QueryService.Domain.Dao;
+global using Topic.QueryService.Domain.Entities;
+global using Topic.QueryService.Api.Topics.Queries;
+global using Topic.QueryService.Infrastructure.Consumers;
+global using Topic.QueryService.Infrastructure.Dao;
+global using Topic.QueryService.Infrastructure.Data;
+global using Topic.QueryService.Infrastructure.Handlers;
+global using Topic.QueryService.Infrastructure.MediatR;

@@ -1,10 +1,5 @@
 using Confluent.Kafka;
 using Microsoft.EntityFrameworkCore;
-using Topic.QueryService.Domain.Dao;
-using Topic.QueryService.Infrastructure.Consumers;
-using Topic.QueryService.Infrastructure.Dao;
-using Topic.QueryService.Infrastructure.Data;
-using Topic.QueryService.Infrastructure.Handlers;
 
 namespace Topic.QueryService.Api;
 
@@ -20,7 +15,8 @@ public static class DependencyInjection
         services.AddSingleton<ConsumerConfig>(consumerConfig);
 
         services.AddScoped<IKafkaEventSubscriber, KafkaEventSubscriber>();
-        services.AddHostedService<KafkaEventConsumerBackgroundService>(); 
+        services.AddHostedService<KafkaEventConsumerBackgroundService>();
+        services.RegisterQueriesHandler();
 
         return services;
     }
@@ -46,6 +42,45 @@ public static class DependencyInjection
         services.AddScoped<ITopicStorage, TopicStorage>();
         services.AddScoped<ICommentStorage, CommentStorage>();
         services.AddScoped<IQueryEventHandler, QueryEventHandler>(); 
+
+        return services;
+    }
+    
+    private static IServiceCollection RegisterQueriesHandler(
+        this IServiceCollection services)
+    {
+
+        services.AddScoped<ITopicQueryHandler, TopicQueryHandler>();
+
+        services.AddScoped<IQueryDispatcher<TopicEntity>>(provider =>
+        {
+            var dispatcher = new QueryDispatcher();
+
+            var commandTopicHandler = provider
+                .GetRequiredService<ITopicQueryHandler>();
+
+            dispatcher.RegisterHandler<GetTopicsQuery>(command =>
+            {
+                return commandTopicHandler.HandleAsync(command);
+            });
+            dispatcher.RegisterHandler<GetTopicByIdQuery>(command =>
+            {
+                return commandTopicHandler.HandleAsync(command);
+            });
+            dispatcher.RegisterHandler<GetTopicsByAuthorNameQuery>(command =>
+            {
+                return commandTopicHandler.HandleAsync(command);
+            });
+            dispatcher.RegisterHandler<GetTopicsWithCommentsQuery>(command =>
+            {
+                return commandTopicHandler.HandleAsync(command);
+            });
+            dispatcher.RegisterHandler<GetTopicsWithLikesQuery>(command =>
+            {
+                return commandTopicHandler.HandleAsync(command);
+            });
+            return dispatcher;
+        });
 
         return services;
     }
