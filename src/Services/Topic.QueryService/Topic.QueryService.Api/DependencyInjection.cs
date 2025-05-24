@@ -1,3 +1,4 @@
+using Carter;
 using Confluent.Kafka;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,8 @@ public static class DependencyInjection
         services.AddScoped<IKafkaEventSubscriber, KafkaEventSubscriber>();
         services.AddHostedService<KafkaEventConsumerBackgroundService>();
         services.RegisterQueriesHandler();
+        
+        services.AddCarter();
 
         return services;
     }
@@ -24,6 +27,7 @@ public static class DependencyInjection
     public static WebApplication UseApiServices(this WebApplication app)
     {
         DatabaseInitializer.Initialize(app);
+        app.MapCarter();
 
         return app;
     }

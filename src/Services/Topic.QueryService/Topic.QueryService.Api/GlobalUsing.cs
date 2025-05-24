@@ -13,3 +13,5 @@ global using Topic.QueryService.Infrastructure.Dao;
 global using Topic.QueryService.Infrastructure.Data;
 global using Topic.QueryService.Infrastructure.Handlers;
 global using Topic.QueryService.Infrastructure.MediatR;
+global using Core.ResponseDtos;
+global using Topic.QueryService.Api.ResponseDtos;
